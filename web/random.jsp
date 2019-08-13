@@ -3,9 +3,8 @@
 <%@ page import="qwa.service.QuizService" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<%! private final QuizService quizService = new QuizService(); %>
-
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
 
     <meta charset="utf-8">
@@ -19,29 +18,24 @@
           href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css"
           integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/css/main.css">
     <title>Random</title>
 
 </head>
 <body>
 
-<div class="col">
+<div class="container">
     <br>
     <h2>Random</h2>
     <hr>
-    <%
-        List<Quiz> quizzes = quizService.getTwoRandomQuizzes();
-    %>
-    <h4>
-        <%=quizzes.get(0).getName()%>
+    <% List<Quiz> quizzes = QuizService.getTwoRandomQuizzes(); %>
+    <h4><%=quizzes.get(0).getName()%>
     </h4>
-    <p>
-        <%=quizzes.get(0).getDescription()%><br><a href="quiz/<%=quizzes.get(0).getId()%>">PLAY</a>
+    <p><%=quizzes.get(0).getDescription()%><br><a href="quiz/<%=quizzes.get(0).getId()%>">PLAY</a>
     </p>
-    <h4>
-        <%=quizzes.get(1).getName()%>
+    <h4><%=quizzes.get(1).getName()%>
     </h4>
-    <p>
-        <%=quizzes.get(1).getDescription()%><br><a href="quiz/<%=quizzes.get(1).getId()%>">PLAY</a>
+    <p><%=quizzes.get(1).getDescription()%><br><a href="quiz/<%=quizzes.get(1).getId()%>">PLAY</a>
     </p>
 </div>
 

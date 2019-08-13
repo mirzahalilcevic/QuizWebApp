@@ -5,7 +5,7 @@ import com.google.gson.JsonParseException;
 import qwa.dao.AbstractDao;
 import qwa.domain.Quiz;
 import qwa.events.*;
-import qwa.session.QuizAutomaton;
+import qwa.session.QuizStateMachine;
 
 import javax.persistence.NoResultException;
 import javax.servlet.ServletException;
@@ -14,8 +14,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @WebServlet(description = "QuizServlet", urlPatterns = {"/quiz/*"})
 public class QuizServlet extends HttpServlet {
@@ -24,48 +24,35 @@ public class QuizServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
 
-            // fetch quiz with given ID
             int id = id(req.getPathInfo());
             var quiz = (Quiz) AbstractDao.get(Quiz.class, id);
-
-            // create collection of active quizzes if it doesn't exist
-            var active = (Map<Integer, QuizAutomaton>) req.getSession().getAttribute("active");
-            if (active == null) {
-                active = new HashMap<>();
-                req.getSession().setAttribute("active", active);
-            }
-
-            // create state machine for given quiz if it doesn't exist
-            if (active.get(id) == null) {
-                var automaton = new QuizAutomaton(quiz);
-                active.put(id, automaton);
-            }
 
             req.setAttribute("quiz", quiz);
             req.getRequestDispatcher("/quiz.jsp").forward(req, resp);
 
         } catch (NumberFormatException | NoResultException e) {
-            req.getRequestDispatcher("/error.html").forward(req, resp);
+            req.getRequestDispatcher("/error.jsp").forward(req, resp);
         }
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
 
+            var active = (Map<Integer, QuizStateMachine>) req.getSession().getAttribute("active");
+            if (active == null) {
+                active = new ConcurrentHashMap<>();
+                req.getSession().setAttribute("active", active);
+            }
+
             int id = id(req.getPathInfo());
+            var sm = active.get(id);
+            if (sm == null) {
+                sm = new QuizStateMachine((Quiz) AbstractDao.get(Quiz.class, id));
+                active.put(id, sm);
+            }
 
-            var active = (Map<Integer, QuizAutomaton>) req.getSession().getAttribute("active");
-            if (active == null)
-                return;
-
-            // fetch current quiz's state machine
-            var automaton = active.get(id);
-            if (automaton == null)
-                return;
-
-            // dispatch request to state machine and send response if message is not null
-            var message = dispatch(automaton, req);
+            var message = dispatch(sm, req);
             if (message != null) {
 
                 resp.setContentType("application/json");
@@ -74,21 +61,24 @@ public class QuizServlet extends HttpServlet {
                 var out = resp.getWriter();
                 out.print(message);
                 out.flush();
-
-                if (automaton.isDone())
-                    active.remove(id);
             }
 
-        } catch (NumberFormatException | JsonParseException ignored) {
+            if (sm.submitted()) {
+                // TODO cookies
+            }
+
+            if (sm.done())
+                active.remove(id);
+
+        } catch (NumberFormatException | NoResultException | JsonParseException ignored) {
         }
     }
 
-    // extract quiz ID from path
     private int id(String path) throws NumberFormatException {
         return Integer.parseInt(path.substring(1));
     }
 
-    private String dispatch(QuizAutomaton automaton, HttpServletRequest req) throws JsonParseException {
+    private String dispatch(QuizStateMachine sm, HttpServletRequest req) throws JsonParseException {
 
         var event = req.getParameter("event");
         if (event == null || event.isEmpty())
@@ -96,29 +86,35 @@ public class QuizServlet extends HttpServlet {
 
         switch (event) {
             case "start":
-                return automaton.process(new Start());
+                return sm.process(new Start());
             case "answer":
                 var answers = req.getParameter("answers");
                 if (answers == null)
                     return null;
                 else
-                    return automaton.process(gson.fromJson(answers, Answer.class));
+                    return sm.process(gson.fromJson(answers, Answer.class));
             case "next":
-                return automaton.process(new Next());
+                return sm.process(new Next());
             case "skip":
                 var remaining = req.getParameter("remaining");
                 if (remaining == null)
                     return null;
                 else
-                    return automaton.process(gson.fromJson(remaining, Skip.class));
+                    return sm.process(gson.fromJson(remaining, Skip.class));
             case "revisit":
                 var question = req.getParameter("question");
                 if (question == null)
                     return null;
                 else
-                    return automaton.process(gson.fromJson(question, Revisit.class));
+                    return sm.process(gson.fromJson(question, Revisit.class));
             case "submit":
-                return automaton.process(new Submit());
+                var info = req.getParameter("info");
+                if (info == null)
+                    return null;
+                else
+                    return sm.process(gson.fromJson(info, Submit.class));
+            case "terminate":
+                return sm.process(new Terminate());
             default:
                 return null;
         }

@@ -5,18 +5,20 @@ import java.util.List;
 
 public class Question {
 
+    public static final String type = "question";
+
     public Question(qwa.domain.Quiz quiz, int number, int remaining) {
 
-        this.number = number;
+        this.number = number + 1;
         var question = quiz.getQuestions().get(number);
 
         this.text = question.getText();
         this.time = remaining == 0 ? question.getTime() : remaining;
         this.points = question.getPoints();
 
-        answers = new ArrayList<>();
+        this.answers = new ArrayList<>();
         for (var answer : question.getAnswers())
-            answers.add(answer.getText());
+            this.answers.add(answer.getText());
     }
 
     private int number;

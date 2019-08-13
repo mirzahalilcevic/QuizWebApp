@@ -11,6 +11,7 @@
         <class>qwa.domain.Quiz</class>
         <class>qwa.domain.Question</class>
         <class>qwa.domain.Answer</class>
+        <class>qwa.domain.Result</class>
 
         <properties>
             <property name="eclipselink.ddl-generation" value="create-or-extend-tables"/>

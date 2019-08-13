@@ -3,7 +3,8 @@
 
 <% Quiz quiz = (Quiz) request.getAttribute("quiz"); %>
 
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
 
     <meta charset="utf-8">
@@ -17,31 +18,22 @@
           href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css"
           integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
 
-    <title>
-        <%=quiz.getName()%>
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/css/main.css">
+
+    <title><%=quiz.getName()%>
     </title>
 
 </head>
 <body>
 
-<div id="quiz-home" class="col">
+<div class="container">
     <br>
-    <h2>
-        <%=quiz.getName()%>
+    <h2><%=quiz.getName()%>
     </h2>
     <hr>
-    <p>
-        <%=quiz.getDescription()%>
+    <p><%=quiz.getDescription()%>
     </p>
-    <button id="start-button">START</button>
-</div>
-
-<div id="quiz-question" class="col" style="visibility: hidden">
-    <br>
-    <h2></h2>
-    <hr>
-    <ul></ul>
-    <button id="skip-button">SKIP</button>
+    <button type="button" class="btn btn-outline-primary">START</button>
 </div>
 
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -58,7 +50,6 @@
     $('body').bootstrapMaterialDesign();
 });</script>
 
-<!-- Local scripts -->
 <script src="<%=request.getContextPath()%>/js/quiz.js"></script>
 
 </body>

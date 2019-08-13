@@ -4,12 +4,13 @@ import java.util.List;
 
 public class Stats {
 
-    public Stats(List<qwa.domain.Question> questions, List<Integer> correct) {
+    public static final String type = "stats";
+
+    public Stats(int score, List<Integer> correct) {
+        this.score = score;
         this.correct = correct;
-        for (int i : correct)
-            score += questions.get(i).getPoints();
     }
 
+    private int score;
     private List<Integer> correct;
-    private int score = 0;
 }

@@ -5,27 +5,27 @@
          version="4.0">
 
     <servlet>
-        <servlet-name>Home</servlet-name>
+        <servlet-name>HomeServlet</servlet-name>
         <jsp-file>/index.jsp</jsp-file>
     </servlet>
-    <!-- mapping -->
+    <!-- HomeServlet -->
     <servlet-mapping>
-        <servlet-name>Home</servlet-name>
+        <servlet-name>HomeServlet</servlet-name>
         <url-pattern>/home</url-pattern>
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>Random</servlet-name>
+        <servlet-name>RandomServlet</servlet-name>
         <jsp-file>/random.jsp</jsp-file>
     </servlet>
-    <!-- mapping -->
+    <!-- RandomServlet -->
     <servlet-mapping>
-        <servlet-name>Random</servlet-name>
+        <servlet-name>RandomServlet</servlet-name>
         <url-pattern>/quiz</url-pattern>
     </servlet-mapping>
 
     <error-page>
-        <location>/error.html</location>
+        <location>/error.jsp</location>
     </error-page>
 
 </web-app>

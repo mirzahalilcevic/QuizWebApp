@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
 
     <meta charset="utf-8">
@@ -14,18 +15,17 @@
           href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css"
           integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
 
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/css/main.css">
     <title>Home</title>
 
 </head>
 <body>
 
-<div class="col">
+<div class="container">
     <br>
     <h2>Home</h2>
     <hr>
-    <p>
-        <a href="quiz">RANDOM</a>
-    </p>
+    <a href="quiz">RANDOM</a>
 </div>
 
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->

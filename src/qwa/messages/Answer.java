@@ -5,6 +5,8 @@ import java.util.List;
 
 public class Answer {
 
+    public static final String type = "answer";
+
     public Answer(List<qwa.domain.Answer> answers) {
         this.answers = new ArrayList<>();
         for (var answer : answers)

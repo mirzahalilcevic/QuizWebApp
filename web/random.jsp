@@ -31,11 +31,11 @@
     <% List<Quiz> quizzes = QuizService.getTwoRandomQuizzes(); %>
     <h4><%=quizzes.get(0).getName()%>
     </h4>
-    <p><%=quizzes.get(0).getDescription()%><br><a href="quiz/<%=quizzes.get(0).getId()%>">PLAY</a>
+    <p><%=quizzes.get(0).getDescription()%><br><a href="play/<%=quizzes.get(0).getId()%>">PLAY</a>
     </p>
     <h4><%=quizzes.get(1).getName()%>
     </h4>
-    <p><%=quizzes.get(1).getDescription()%><br><a href="quiz/<%=quizzes.get(1).getId()%>">PLAY</a>
+    <p><%=quizzes.get(1).getDescription()%><br><a href="play/<%=quizzes.get(1).getId()%>">PLAY</a>
     </p>
 </div>
 

@@ -12,6 +12,10 @@ public class Result {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
+    @ManyToOne
+    @JoinColumn(name = "quiz_id", nullable = false)
+    private Quiz quiz;
+
     @Column(name = "first_name")
     private String firstName;
 
@@ -21,13 +25,14 @@ public class Result {
     @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "score")
+    @Column(name = "score", nullable = false)
     private int score;
 
     public Result() {
     }
 
-    public Result(Submit event, int score) {
+    public Result(Quiz quiz, Submit event, int score) {
+        this.quiz = quiz;
         this.firstName = event.firstName;
         this.lastName = event.lastName;
         this.email = event.email;
@@ -54,6 +59,10 @@ public class Result {
         return score;
     }
 
+    public Quiz getQuiz() {
+        return quiz;
+    }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -68,5 +77,9 @@ public class Result {
 
     public void setScore(int score) {
         this.score = score;
+    }
+
+    public void setQuiz(Quiz quiz) {
+        this.quiz = quiz;
     }
 }

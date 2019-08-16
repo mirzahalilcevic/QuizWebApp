@@ -7,7 +7,6 @@ function send(event) {
 var start = "event=start";
 var answer_right = "event=answer&answers={answers:[false, true, false]}";
 var answer_wrong = "event=answer&answers={answers:[false, false, false]}";
-var next = "event=next";
 var submit = "event=submit&info={firstName:'dummy',lastName:'test',email:'dummy@test.com'}";
 
 function make_skip(remaining) {

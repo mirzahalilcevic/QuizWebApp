@@ -5,6 +5,7 @@ import com.google.gson.JsonParseException;
 import qwa.dao.AbstractDao;
 import qwa.domain.Quiz;
 import qwa.events.*;
+import qwa.session.CompletedQuizHelper;
 import qwa.session.QuizStateMachine;
 
 import javax.persistence.NoResultException;
@@ -17,7 +18,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@WebServlet(description = "QuizServlet", urlPatterns = {"/quiz/*"})
+@WebServlet(description = "QuizServlet", urlPatterns = {"/play/*"})
 public class QuizServlet extends HttpServlet {
 
     @Override
@@ -63,9 +64,8 @@ public class QuizServlet extends HttpServlet {
                 out.flush();
             }
 
-            if (sm.submitted()) {
-                // TODO cookies
-            }
+            if (sm.submitted())
+                CompletedQuizHelper.add(req, resp, id);
 
             if (sm.done())
                 active.remove(id);
@@ -93,8 +93,6 @@ public class QuizServlet extends HttpServlet {
                     return null;
                 else
                     return sm.process(gson.fromJson(answers, Answer.class));
-            case "next":
-                return sm.process(new Next());
             case "skip":
                 var remaining = req.getParameter("remaining");
                 if (remaining == null)

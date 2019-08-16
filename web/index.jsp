@@ -25,7 +25,7 @@
     <br>
     <h2>Home</h2>
     <hr>
-    <a href="quiz">RANDOM</a>
+    <a href="play">RANDOM</a>
 </div>
 
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->

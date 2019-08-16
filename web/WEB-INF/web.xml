@@ -21,7 +21,7 @@
     <!-- RandomServlet -->
     <servlet-mapping>
         <servlet-name>RandomServlet</servlet-name>
-        <url-pattern>/quiz</url-pattern>
+        <url-pattern>/play</url-pattern>
     </servlet-mapping>
 
     <error-page>

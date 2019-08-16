@@ -28,8 +28,8 @@ public class QuizStateMachine {
         }
     }
 
-    // QUESTION + answer[isCorrect] / (add_correct, send_answer) -> ANSWERED
-    // QUESTION + answer[!isCorrect] / send_answer -> ANSWERED
+    // QUESTION + answer[isCorrect] / (add_correct, inc_score) -> ANSWERED
+    // QUESTION + answer -> ANSWERED
     public String process(Answer event) {
         switch (state) {
             case QUESTION:
@@ -39,7 +39,7 @@ public class QuizStateMachine {
                     score += question.getPoints();
                 }
                 state = ANSWERED;
-                return gson.toJson(new qwa.messages.Answer(question.getAnswers()));
+                return process(new Next()); // trigger next question
             default:
                 return null;
         }
@@ -47,7 +47,7 @@ public class QuizStateMachine {
 
     // ANSWERED + on_entry<Next> / advance
     // ANSWERED + next[!isLast] / send_question -> QUESTION
-    // ANSWERED + next[!hasSkipped] / send_stats -> FINISHED
+    // ANSWERED + next[!hasSkipped] / send_summary -> FINISHED
     // ANSWERED + next / send_skipped -> SKIPPED
     public String process(Next event) {
         switch (state) {
@@ -58,7 +58,7 @@ public class QuizStateMachine {
                     return gson.toJson(new qwa.messages.Question(quiz, current, 0));
                 } else if (skipped.isEmpty()) {
                     state = FINISHED;
-                    return gson.toJson(new qwa.messages.Stats(score, correct));
+                    return gson.toJson(new qwa.messages.Summary(score, correct));
                 } else {
                     state = SKIPPED;
                     return gson.toJson(new qwa.messages.Skipped(skipped, quiz.getQuestions()));
@@ -85,18 +85,17 @@ public class QuizStateMachine {
         }
     }
 
-    // SKIPPED + on_entry / set_skipped_flag
+    // SKIPPED + on_entry / set_partial_flag
     // SKIPPED + revisit[isSkipped] / (remove_skipped, set_current, send_question) -> QUESTION
     public String process(Revisit event) {
         switch (state) {
             case SKIPPED:
                 partial = true;
-                var question = event.question - 1;
-                if (!skipped.containsKey(question))
+                if (!skipped.containsKey(event.question))
                     return null;
-                var remaining = skipped.get(question);
-                skipped.remove(question);
-                current = question;
+                var remaining = skipped.get(event.question);
+                skipped.remove(event.question);
+                current = event.question;
                 state = QUESTION;
                 return gson.toJson(new qwa.messages.Question(quiz, current, remaining));
             default:
@@ -104,19 +103,21 @@ public class QuizStateMachine {
         }
     }
 
-    // FINISHED + submit / (persist_result, send_ack) -> ZOMBIE
+    // FINISHED + submit / (persist_result, set_submitted_flag, send_ack) -> ZOMBIE
     public String process(Submit event) {
-
-        var result = new Result(event, score);
-        quiz.getInbox().add(result);
-        state = ZOMBIE;
-
-        try {
-            AbstractDao.update(quiz);
-            submitted = true;
-            return gson.toJson(new qwa.messages.Ack(true));
-        } catch (Exception e) {
-            return gson.toJson(new qwa.messages.Ack(false));
+        switch (state) {
+            case FINISHED:
+                var result = new Result(quiz, event, score);
+                try {
+                    AbstractDao.save(result);
+                    submitted = true;
+                    state = ZOMBIE;
+                    return gson.toJson(new qwa.messages.Ack(true));
+                } catch (Exception e) {
+                    return gson.toJson(new qwa.messages.Ack(false));
+                }
+            default:
+                return null;
         }
     }
 
@@ -135,18 +136,16 @@ public class QuizStateMachine {
     }
 
     private final Quiz quiz;
-
-    private int current = 0;
+    private int state = INIT;
 
     private List<Integer> correct = new ArrayList<>();
+    private Map<Integer, Integer> skipped = new HashMap<>();
+
+    private int current = 0;
     private int score = 0;
 
-    private Map<Integer, Integer> skipped = new HashMap<>();
     private boolean partial = false;
-
     private boolean submitted = false;
-
-    private int state = INIT;
 
     // states
     private static final int INIT = 0;

@@ -5,11 +5,9 @@ import java.util.List;
 
 public class Question {
 
-    public static final String type = "question";
-
     public Question(qwa.domain.Quiz quiz, int number, int remaining) {
 
-        this.number = number + 1;
+        this.number = number;
         var question = quiz.getQuestions().get(number);
 
         this.text = question.getText();
@@ -20,6 +18,8 @@ public class Question {
         for (var answer : question.getAnswers())
             this.answers.add(answer.getText());
     }
+
+    private final String type = "question";
 
     private int number;
 

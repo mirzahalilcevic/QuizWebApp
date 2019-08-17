@@ -15,7 +15,7 @@
           href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css"
           integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
 
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/css/main.css">
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/css/style.css">
     <title>Home</title>
 
 </head>
@@ -25,7 +25,7 @@
     <br>
     <h2>Home</h2>
     <hr>
-    <a href="play">RANDOM</a>
+    <a href="quiz">RANDOM</a>
 </div>
 
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->

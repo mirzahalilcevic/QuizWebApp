@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@WebServlet(description = "QuizServlet", urlPatterns = {"/play/*"})
+@WebServlet(description = "QuizServlet", urlPatterns = {"/quiz/*"})
 public class QuizServlet extends HttpServlet {
 
     @Override
@@ -31,8 +31,10 @@ public class QuizServlet extends HttpServlet {
             req.setAttribute("quiz", quiz);
             req.getRequestDispatcher("/quiz.jsp").forward(req, resp);
 
-        } catch (NumberFormatException | NoResultException e) {
-            req.getRequestDispatcher("/error.jsp").forward(req, resp);
+        } catch (NumberFormatException e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        } catch (NoResultException e) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
@@ -40,35 +42,28 @@ public class QuizServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
 
-            var active = (Map<Integer, QuizStateMachine>) req.getSession().getAttribute("active");
-            if (active == null) {
-                active = new ConcurrentHashMap<>();
-                req.getSession().setAttribute("active", active);
+            var playing = (Map<Integer, QuizStateMachine>) req.getSession().getAttribute("playing");
+            if (playing == null) {
+                playing = new ConcurrentHashMap<>();
+                req.getSession().setAttribute("playing", playing);
             }
 
             int id = id(req.getPathInfo());
-            var sm = active.get(id);
+            var sm = playing.get(id);
             if (sm == null) {
                 sm = new QuizStateMachine((Quiz) AbstractDao.get(Quiz.class, id));
-                active.put(id, sm);
+                playing.put(id, sm);
             }
 
             var message = dispatch(sm, req);
-            if (message != null) {
-
-                resp.setContentType("application/json");
-                resp.setCharacterEncoding("UTF-8");
-
-                var out = resp.getWriter();
-                out.print(message);
-                out.flush();
-            }
+            if (message != null)
+                sendJson(resp, message);
 
             if (sm.submitted())
                 CompletedQuizHelper.add(req, resp, id);
 
             if (sm.done())
-                active.remove(id);
+                playing.remove(id);
 
         } catch (NumberFormatException | NoResultException | JsonParseException ignored) {
         }
@@ -118,5 +113,15 @@ public class QuizServlet extends HttpServlet {
         }
     }
 
-    private static final Gson gson = new Gson();
+    private void sendJson(HttpServletResponse resp, String json) throws IOException {
+
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+
+        var out = resp.getWriter();
+        out.print(json);
+        out.flush();
+    }
+
+    private final Gson gson = new Gson();
 }

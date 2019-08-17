@@ -155,7 +155,7 @@ public class QuizStateMachine {
     private static final int FINISHED = 4;
     private static final int ZOMBIE = 5;
 
-    private static final Gson gson = new Gson();
+    private final Gson gson = new Gson();
 
     private void advance() {
         if (partial)

@@ -9,7 +9,7 @@ import java.util.Random;
 
 public class QuizService {
 
-    public static List<Quiz> getTwoRandomQuizzes() {
+    public List<Quiz> getTwoRandomQuizzes() {
 
         int count = (int) AbstractDao.count(Quiz.class), i = random.nextInt(count), j;
         do j = random.nextInt(count); while (j == i);
@@ -21,5 +21,5 @@ public class QuizService {
         return quizzes;
     }
 
-    private static final Random random = new Random();
+    private final Random random = new Random();
 }

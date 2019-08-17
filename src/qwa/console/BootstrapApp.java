@@ -18,6 +18,7 @@ public class BootstrapApp {
             quiz.setName("Quiz " + i);
             quiz.setDescription(quiz.getName() + " description");
             quiz.setQuestions(createQuestions(5));
+            quiz.activate();
 
             AbstractDao.save(quiz);
         }

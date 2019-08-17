@@ -12,7 +12,7 @@ public class Answer {
             return false;
 
         for (int i = 0; i < answers.size(); ++i)
-            if (answers.get(i).isCorrect() != this.answers.get(i))
+            if (answers.get(i).getCorrectness() != this.answers.get(i))
                 return false;
 
         return true;

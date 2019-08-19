@@ -10,8 +10,10 @@ public class Question {
         this.number = number;
         var question = quiz.getQuestions().get(number);
 
+        this.remaining = remaining == 0 ? question.getTime() : remaining;
+
         this.text = question.getText();
-        this.time = remaining == 0 ? question.getTime() : remaining;
+        this.time = question.getTime();
         this.points = question.getPoints();
 
         this.answers = new ArrayList<>();
@@ -22,6 +24,7 @@ public class Question {
     private final String type = "question";
 
     private int number;
+    private int remaining;
 
     private String text;
     private List<String> answers;

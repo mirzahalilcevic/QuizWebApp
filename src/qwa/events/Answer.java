@@ -8,7 +8,7 @@ public class Answer {
 
     public boolean check(List<qwa.domain.Answer> answers) {
 
-        if (answers.size() != this.answers.size())
+        if (answers.size() > this.answers.size())
             return false;
 
         for (int i = 0; i < answers.size(); ++i)

@@ -1,164 +1,343 @@
+class View {
 
-function View(id, total) {
-    this.id = id;
-    this.total = total;
-    this.checked = 0;
-}
+    constructor(id, num_questions) {
 
-View.prototype.constructor = View;
+        this.id = id;
+        this.id_selector = '#' + id;
 
-View.prototype.hideHome = function () {
-    $('#' + this.id + ' .quiz-home').hide();
-};
+        this.num_questions = num_questions;
 
-View.prototype.hideQuestion = function () {
-    $('#' + this.id + ' .quiz-question').hide();
-};
+        this.checked = 0;
+        this.interval = undefined;
 
-View.prototype.hideSkipped = function () {
-    $('#' + this.id + ' .quiz-skipped').hide();
-};
+        this.revisit_callback = undefined;
+    }
 
-View.prototype.showQuestion = function (data) {
+    hide_home(callback) {
+        $(this.id_selector + ' .quiz-home .card-body').animate({
+            'margin-top': '-30%'
+        }, 600, 'swing', () => $(this.id_selector + ' .quiz-home').animate({
+            'opacity': '0.0',
+            'margin-top': '-5%'
+        }, 400, 'linear', () => {
+            $(this.id_selector + ' .quiz-home').hide();
+            callback();
+        })).delay(250);
+    }
 
-    $('#' + this.id + ' .question-text').html('<strong>' + data.text + '</strong>');
-    $('#' + this.id + ' .question-counter').text(data.number + 1 + '/' + this.total);
+    hide_question(callback) {
 
-    for (var i = 0; i < 5; i++) {
+        clearInterval(this.interval);
 
-        var checkbox = $('#' + this.id + ' .answer-' + i);
-        var label = $('#' + this.id + ' .answer-label-' + i);
+        $(this.id_selector + ' .time-progress-bar').removeClass('bg-success bg-warning bg-danger');
+        $(this.id_selector + ' .time-progress-bar').addClass('bg-info');
+        $(this.id_selector + ' .time-progress-bar').css('width', '100%');
 
-        checkbox.prop("checked", false);
+        for (let i = 0; i < 5; i++)
+            if (!$(this.id_selector + ' .answer-' + i).is(':checked'))
+                $(this.id_selector + ' .answer-label-' + i).animate({
+                    'opacity': '0.0',
+                    'margin-left': '+5%'
+                }, 400, 'swing');
 
-        var answer = data.answers[i];
-        if (answer === undefined) {
-            checkbox.hide();
-            label.hide();
+        $(this.id_selector + ' .quiz-question').animate({
+            'opacity': '0.0'
+        }, 400, 'linear', () => {
+            $(this.id_selector + ' .quiz-question').hide();
+            callback();
+        }).delay(300);
+    }
+
+    hide_skipped(callback) {
+        $(this.id_selector + ' .quiz-skipped').animate({
+            'opacity': '0.0'
+        }, 400, 'linear', () => {
+            $(this.id_selector + ' .quiz-skipped').hide();
+            callback();
+        }).delay(250);
+    }
+
+    show_question(data) {
+
+        $(this.id_selector + ' .question-counter').text(data.number + 1 + ' of ' + this.num_questions);
+        $(this.id_selector + ' .question-text').html(data.text);
+
+        for (let i = 0; i < 5; i++) {
+
+            let checkbox = $(this.id_selector + ' .answer-' + i);
+            let label = $(this.id_selector + ' .answer-label-' + i);
+
+            checkbox.attr('disabled', false);
+            checkbox.prop('checked', false);
+
+            label.css('opacity', '1.0');
+            label.css('margin-left', '0');
+
+            let answer = data.answers[i];
+            if (answer === undefined) {
+                checkbox.hide();
+                label.css('visibility', 'hidden');
+            } else {
+                checkbox.show();
+                label.css('visibility', 'visible');
+                label.text(answer);
+            }
+        }
+
+        $(this.id_selector + ' .next-button').attr('disabled', true);
+        $(this.id_selector + ' .skip-button').attr('disabled', false);
+        $(this.id_selector + ' .time-progress-bar').attr('data-time', data.time);
+
+        this.checked = 0;
+        this.update_progress(data.remaining);
+
+        $(this.id_selector + ' .quiz-question').css({
+            'opacity': '0.0'
+        });
+        $(this.id_selector + ' .quiz-question').show();
+        $(this.id_selector + ' .quiz-question').animate({
+            'opacity': '1.0'
+        }, 400, 'linear', () => this.interval = setInterval(() => this.handle_interval(), 1000));
+    }
+
+    show_skipped(data) {
+
+        let list = $(this.id_selector + ' .skipped-questions');
+        list.empty();
+
+        let i = 0;
+        for (let number in data.skipped) {
+            list.append(this.make_skipped(number, data.skipped[number], data.questions[i++]));
+            $(this.id_selector + ' .skipped-' + number).click(() => this.revisit_callback(number));
+        }
+
+        $(this.id_selector + ' .quiz-skipped').css({
+            'opacity': '0.0'
+        });
+        $(this.id_selector + ' .quiz-skipped').show();
+        $(this.id_selector + ' .quiz-skipped').animate({
+            'opacity': '1.0'
+        }, 400, 'linear');
+    }
+
+    show_summary(data) {
+
+        let percent = data.score / data.total * 100;
+        $(this.id_selector + ' .summary-chart').attr('data-percent', percent);
+
+        $(this.id_selector + ' .summary-correct').text(data.correct.length + '/' + this.num_questions);
+        $(this.id_selector + ' .summary-points').text(data.score + '/' + data.total);
+
+        let color, hex;
+        if (percent >= 60) {
+            color = 'success-color';
+            hex = '#00c851';
+        } else if (percent >= 40) {
+            color = 'warning-color';
+            hex = '#ffbb33';
         } else {
-            checkbox.show();
-            label.show();
-            label.text(answer);
+            color = 'danger-color';
+            hex = '#ff4444';
+        }
+
+        $(this.id_selector + ' .summary-badge').removeClass('success-color warning-color danger-color');
+        $(this.id_selector + ' .summary-badge').addClass(color);
+
+        $(this.id_selector + ' .summary-chart').easyPieChart({
+            barColor: hex,
+            onStep: function (from, to, percent) {
+                $(this.el).find('.percent').text(Math.round(percent));
+            }
+        });
+
+        $(this.id_selector + ' .quiz-summary').css({
+            'opacity': '0.0',
+            'margin-top': '-10%'
+        });
+        $(this.id_selector + ' .quiz-summary').show();
+        $(this.id_selector + ' .quiz-summary').animate({
+            'opacity': '1.0',
+            'margin-top': '0'
+        }, 400, 'linear');
+    }
+
+    make_skipped(number, remaining, question) {
+        let color = 'badge-' + this.get_color(remaining);
+        return '<button type="button" class="list-group-item list-group-item-action waves-effect d-flex '
+            + 'justify-content-between align-items-center skipped-' + number + '" title="' + question
+            + '"><span class="d-inline-block ' + 'text-truncate">' + question + '</span>&nbsp;&nbsp;'
+            + '<span class="badge ' + color + ' badge-pill">' + remaining + 's</span></button>';
+    }
+
+    handle(data) {
+        switch (data.type) {
+            case 'question':
+                this.show_question(data);
+                break;
+            case 'skipped':
+                this.show_skipped(data);
+                break;
+            case 'summary':
+                this.show_summary(data);
+                break;
+            case 'ack':
+                this.submit_done(data);
+                break;
         }
     }
 
-    this.checked = 0;
-    $('#' + this.id + ' .next-button').attr('disabled', true);
-
-    $('#' + this.id + ' .time-progress-bar').css('width', '100%');
-    $('#' + this.id + ' .time-progress-bar').text(data.time + 's');
-
-    $('#' + this.id + ' .quiz-question').show();
-};
-
-View.prototype.showSkipped = function (data) {
-
-    var list = $('#' + this.id + ' .skipped-questions');
-    list.empty();
-
-    var i = 0;
-    for (var number in data.skipped)
-        list.append(this.makeSkippedItem(number, data.skipped[number], data.questions[i++]));
-
-    $('#' + this.id + ' .quiz-skipped').show();
-};
-
-View.prototype.makeSkippedItem = function (number, remaining, question) {
-
-    var color;
-    if (remaining > 40)
-        color = 'badge-success';
-    else if (remaining > 10)
-        color = 'badge-warning';
-    else
-        color = 'badge-danger';
-
-    return '<button type="button" class="list-group-item list-group-item-action waves-effect d-flex justify-content-between align-items-center">'
-        + question + '<span class="badge ' + color + ' badge-pill">' + remaining + 's</span></button>';
-};
-
-View.prototype.handle = function (data) {
-    switch (data.type) {
-        case 'question':
-            this.showQuestion(data);
-            break;
-        case 'skipped':
-            this.showSkipped(data);
-            break;
-        case 'summary':
-            break;
-    }
-};
-
-View.prototype.handleCheckboxChange = function (checked) {
-    if (checked)
-        this.checked++ === 0 && $('#' + this.id + ' .next-button').attr('disabled', false);
-    else
-        this.checked-- === 1 && $('#' + this.id + ' .next-button').attr('disabled', true);
-};
-
-View.prototype.getAnswers = function () {
-
-    var answers = [];
-    for (var i = 0; i < 5; i++) {
-        var checkbox = $('#' + this.id + ' .answer-' + i);
-        answers.push(checkbox.is(":checked"));
+    handle_checkbox(checked) {
+        if (checked)
+            this.checked++ === 0 && $(this.id_selector + ' .next-button').attr('disabled', false);
+        else
+            this.checked-- === 1 && $(this.id_selector + ' .next-button').attr('disabled', true);
     }
 
-    return answers;
-};
+    handle_interval() {
 
+        let remaining = this.get_remaining() - 1;
+        if (remaining <= 0) {
 
-function Controller(id, view) {
-    this.id = id;
-    this.view = view;
+            clearInterval(this.interval);
+
+            $(this.id_selector + ' .next-button').attr('disabled', false);
+            $(this.id_selector + ' .skip-button').attr('disabled', true);
+
+            for (let i = 0; i < 5; i++) {
+                $(this.id_selector + ' .answer-' + i).prop('checked', false);
+                $(this.id_selector + ' .answer-' + i).attr('disabled', true);
+            }
+
+            $(this.id_selector + ' .time-progress-bar').css('width', '100%');
+            $(this.id_selector + ' .time-progress-bar').text("alright pinhead, your time's up");
+
+            return;
+        }
+
+        this.update_progress(remaining);
+    }
+
+    update_progress(remaining) {
+
+        let color = 'bg-' + this.get_color(remaining);
+        $(this.id_selector + ' .time-progress-bar').removeClass('bg-success bg-warning bg-danger bg-info');
+        $(this.id_selector + ' .time-progress-bar').addClass(color);
+
+        let time = $(this.id_selector + ' .time-progress-bar').attr('data-time');
+        $(this.id_selector + ' .time-progress-bar').css('width', (remaining / time * 100) + '%');
+        $(this.id_selector + ' .time-progress-bar').text(remaining + 's');
+    }
+
+    get_answers() {
+
+        let answers = [];
+        for (let i = 0; i < 5; i++) {
+            let checkbox = $(this.id_selector + ' .answer-' + i);
+            answers.push(checkbox.is(":checked"));
+        }
+
+        return answers;
+    }
+
+    get_remaining() {
+        let remaining = $(this.id_selector + ' .time-progress-bar').text();
+        return remaining.substring(0, remaining.length - 1);
+    }
+
+    get_color(remaining) {
+        if (remaining > 30)
+            return 'success';
+        else if (remaining > 10)
+            return 'warning';
+        else
+            return 'danger';
+    }
+
+    get_info() {
+
+        let first_name = $(this.id_selector + ' .first-name').val();
+        let last_name = $(this.id_selector + ' .last-name').val();
+        let email = $(this.id_selector + ' .email').val();
+
+        return {firstName: first_name, lastName: last_name, email: email};
+    }
+
+    subscribe_revisit(callback) {
+        this.revisit_callback = callback;
+    }
+
+    submit() {
+        $(this.id_selector + ' .submit-button').html('<span class="spinner-border spinner-border-sm mr-2"'
+            + ' role="status" aria-hidden="true"></span>').addClass('disabled');
+    }
+
+    submit_done(data) {
+        if (data.success)
+            $(this.id_selector + ' .submit-button').text('Submitted');
+        else {
+            $(this.id_selector + ' .submit-button').text('Send').removeClass('disabled');
+            toastr.error('Submitting results failed.');
+        }
+    }
 }
 
-Controller.prototype.constructor = Controller;
+class Controller {
 
-Controller.prototype.send = function (event, data, callback) {
-
-    var msg = 'event=' + event;
-    if (data !== null) {
-        switch (event) {
-            case 'answer':
-                msg += '&answers=' + JSON.stringify({answers: data});
-                break;
-            case 'skip':
-                msg += '&remaining=' + JSON.stringify({remaining: data});
-                break;
-            case 'revisit':
-                msg += '&question=' + JSON.stringify({question: data});
-                break;
-            case 'submit':
-                msg += '&info=' + JSON.stringify(data);
-                break;
-        }
+    constructor(id, view) {
+        this.id = id;
+        this.view = view;
     }
 
-    $.post('/quiz/' + this.id, msg, callback, 'json');
-};
+    send(event, data, callback) {
 
-Controller.prototype.terminate = function () {
-    this.send('terminate', null, null);
-};
+        let msg = 'event=' + event;
+        if (data !== null) {
+            switch (event) {
+                case 'answer':
+                    msg += '&answers=' + JSON.stringify({answers: data});
+                    break;
+                case 'skip':
+                    msg += '&remaining=' + JSON.stringify({remaining: data});
+                    break;
+                case 'revisit':
+                    msg += '&question=' + JSON.stringify({question: data});
+                    break;
+                case 'submit':
+                    msg += '&info=' + JSON.stringify(data);
+                    break;
+            }
+        }
 
-Controller.prototype.start = function () {
-    this.view.hideHome();
-    this.send('start', null, data => this.view.handle(data));
-};
+        $.post('/quiz/' + this.id, msg, callback, 'json');
+    }
 
-Controller.prototype.next = function () {
-    this.view.hideQuestion();
-    this.send('answer', this.view.getAnswers(), data => this.view.handle(data));
-};
+    terminate() {
+        this.send('terminate', null, null);
+    }
 
-Controller.prototype.skip = function () {
-    this.view.hideQuestion();
-    this.send('skip', 60, data => this.view.handle(data));
-};
+    start() {
+        this.view.hide_home(
+            () => this.send('start', null, data => this.view.handle(data)));
+    }
 
-Controller.prototype.revisit = function (question) {
-    this.view.hideSkipped();
-    this.send('revisit', question, data => this.view.handle(data));
-};
+    next() {
+        this.view.hide_question(
+            () => this.send('answer', this.view.get_answers(), data => this.view.handle(data)));
+    }
+
+    skip() {
+        this.view.hide_question(
+            () => this.send('skip', this.view.get_remaining(), data => this.view.handle(data)));
+    }
+
+    revisit(question) {
+        this.view.hide_skipped(
+            () => this.send('revisit', question, data => this.view.handle(data)));
+    }
+
+    submit() {
+        this.view.submit();
+        this.send('submit', this.view.get_info(), data => this.view.handle(data));
+    }
+}
+

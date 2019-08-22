@@ -31,32 +31,32 @@
 
 <div class="container wrapper">
     <div class="row">
-        <div class="col flex-center" id="quiz-view">
+        <div class="col flex-center animated fadeInDown" id="quiz-view">
 
             <!-- Quiz Home-->
             <div class="card card-cascade wider quiz-home">
 
-                <!-- Quiz Image -->
+                <!-- Image -->
                 <div class="view view-cascade overlay">
-                    <img class="card-img-top quiz-image" src="https://mdbootstrap.com/img/Photos/Others/photo6.jpg"
+                    <img class="card-img-top" src="https://mdbootstrap.com/img/Photos/Others/photo6.jpg"
                          alt="quiz image">
-                    <a href="#!">
-                        <div class="mask rgba-white-slight"></div>
-                    </a>
                 </div>
 
-                <!-- Quiz Info -->
+                <!-- Info -->
                 <div class="card-body card-body-cascade text-center">
 
                     <!-- Name -->
                     <h4 class="card-title quiz-name"><strong>
                         <%=quiz.getName()%>
                     </strong></h4>
+
                     <!-- Description -->
                     <p class="card-text quiz-desc">
                         <%=quiz.getDescription()%>
                     </p>
+
                     <br>
+
                     <!-- Start -->
                     <button type="button" class="btn btn-outline-yellow btn-rounded waves-effect start-button">
                         Start
@@ -67,70 +67,132 @@
             <!-- Quiz Home -->
 
             <!-- Quiz Question -->
-            <div class="card card-cascade quiz-question" style="display: none">
+            <div class="card quiz-question" style="display: none">
                 <div class="card-body card-body-cascade">
 
                     <!-- Question -->
-                    <h5 class="card-header question-text"></h5>
+                    <h5 class="card-header question-text">Question text</h5>
 
                     <!-- Answers -->
-                    <div class="form-check question-answers">
+                    <div class="form-check question-answers checkbox-custom">
                         <br>
                         <input type="checkbox" class="form-check-input answer-0" id="checkbox1">
-                        <label class="form-check-label answer-label-0" for="checkbox1"></label>
+                        <label class="form-check-label answer-label-0" for="checkbox1">Answer 1</label>
                         <br>
                         <input type="checkbox" class="form-check-input answer-1" id="checkbox2">
-                        <label class="form-check-label answer-label-1" for="checkbox2"></label>
+                        <label class="form-check-label answer-label-1" for="checkbox2">Answer 2</label>
                         <br>
                         <input type="checkbox" class="form-check-input answer-2" id="checkbox3">
-                        <label class="form-check-label answer-label-2" for="checkbox3"></label>
+                        <label class="form-check-label answer-label-2" for="checkbox3">Answer 3</label>
                         <br>
                         <input type="checkbox" class="form-check-input answer-3" id="checkbox4">
-                        <label class="form-check-label answer-label-3" for="checkbox4"></label>
+                        <label class="form-check-label answer-label-3" for="checkbox4">Answer 4</label>
                         <br>
                         <input type="checkbox" class="form-check-input answer-4" id="checkbox5">
-                        <label class="form-check-label answer-label-4" for="checkbox5"></label>
+                        <label class="form-check-label answer-label-4" for="checkbox5">Answer 5</label>
                     </div>
-                    <br>
 
-                    <!-- Next -->
-                    <button type="button" class="btn btn-sm btn-outline-yellow btn-rounded waves-effect next-button"
-                            disabled>
-                        Next
-                    </button>
-                    <!-- Skip -->
-                    <button type="button" class="btn btn-sm btn-outline-yellow btn-rounded waves-effect skip-button">
-                        Skip
-                    </button>
+                    <!-- Controls -->
+                    <p class="card-text text-right">
+                        <br>
+                        <!-- Next -->
+                        <button type="button" class="btn btn-sm btn-outline-yellow btn-rounded waves-effect next-button"
+                                disabled>
+                            Next
+                        </button>
+                        <!-- Skip -->
+                        <button type="button"
+                                class="btn btn-sm btn-outline-yellow btn-rounded waves-effect skip-button">
+                            Skip
+                        </button>
+                    </p>
 
                     <!-- Progress -->
                     <div class="progress md-progress time-progress" style="height: 20px">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated time-progress-bar bg-success"
-                             role="progressbar" style="width: 80%; height: 20px" aria-valuenow="0" aria-valuemin="0"
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success time-progress-bar"
+                             role="progressbar" style="width: 100%; height: 20px" aria-valuenow="0" aria-valuemin="0"
                              aria-valuemax="100">
+                            60s
                         </div>
                     </div>
 
-                    <div class="card-footer text-muted text-center question-counter"></div>
+                    <!-- Counter -->
+                    <div class="card-footer text-muted text-center question-counter">1/10</div>
 
                 </div>
             </div>
             <!-- Quiz Question -->
 
             <!-- Quiz Skipped -->
-            <div class="card card-cascade quiz-skipped" style="display: none">
-                <div class="card-body card-body-cascade">
+            <div class="card quiz-skipped" style="display: none">
+                <div class="card-body card-body-cascade text-center">
 
-                    <h5 class="card-header"><strong>Skipped questions</strong></h5>
-                    <br>
+                    <h4 class="card-title"><strong>Skipped questions</strong></h4>
 
                     <!-- Skipped -->
-                    <div class="list-group skipped-questions"></div>
-                    <br>
+                    <div class="list-group skipped-questions">
+                        <button type="button"
+                                class="list-group-item list-group-item-action waves-effect d-flex justify-content-between align-items-center"
+                                title="Tooltip">
+                            <span class="d-inline-block text-truncate">Skipped question</span>&nbsp;&nbsp;
+                            <span class="badge badge-success badge-pill">50s</span>
+                        </button>
+                    </div>
 
                 </div>
             </div>
-            <!-- Quiz Question -->
+            <!-- Quiz Skipped -->
+
+            <!-- Quiz Summary -->
+            <div class="card quiz-summary" style="display: none">
+                <div class="card-body card-body-cascade text-center">
+
+                    <!-- Result -->
+                    <span class="min-chart summary-chart" data-percent="100"><span
+                            class="percent"></span></span>
+                    <h5><span class="label success-color badge summary-badge">
+                        <span class="summary-correct">correct/num</span> <i class="fas fa-check"></i> &nbsp;
+                        <span class="summary-points">score/total</span> points</span></h5>
+
+                    <br>
+
+                    <!-- Form -->
+                    <form class="text-center">
+
+                        <div class="form-row">
+                            <div class="col">
+                                <!-- First name -->
+                                <div class="md-form">
+                                    <input type="text" id="input-1" class="form-control first-name">
+                                    <label for="input-1">First name</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <!-- Last name -->
+                                <div class="md-form">
+                                    <input type="email" id="input-2" class="form-control last-name">
+                                    <label for="input-2">Last name</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- E-mail -->
+                        <div class="md-form mt-0">
+                            <input type="email" id="input-3" class="form-control email">
+                            <label for="input-3">E-mail</label>
+                        </div>
+
+                        <!-- Send button -->
+                        <button type="button"
+                                class="btn blue-gradient btn-rounded btn-block my-4 waves-effect z-depth-0 submit-button">
+                            Send
+                        </button>
+
+                    </form>
+
+                </div>
+            </div>
+            <!-- Quiz Summary -->
 
         </div>
     </div>
@@ -154,8 +216,8 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/quiz.js"></script>
 <script>
 
-    var view = new View('quiz-view', <%=quiz.getQuestions().size()%>);
-    var controller = new Controller(<%=quiz.getId()%>, view);
+    let view = new View('quiz-view', <%=quiz.getQuestions().size()%>);
+    let controller = new Controller(<%=quiz.getId()%>, view);
 
     $(window).on('beforeunload', function () {
         controller.terminate();
@@ -174,8 +236,14 @@
     });
 
     $('.question-answers :checkbox').change(function () {
-        view.handleCheckboxChange(this.checked);
+        view.handle_checkbox(this.checked);
     });
+
+    $('.submit-button').click(function () {
+        controller.submit();
+    });
+
+    view.subscribe_revisit((question) => controller.revisit(question));
 
 </script>
 

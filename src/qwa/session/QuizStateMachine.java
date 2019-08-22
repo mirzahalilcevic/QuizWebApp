@@ -34,6 +34,7 @@ public class QuizStateMachine {
         switch (state) {
             case QUESTION:
                 var question = quiz.getQuestions().get(current);
+                total += question.getPoints();
                 if (event.check(question.getAnswers())) {
                     correct.add(current);
                     score += question.getPoints();
@@ -58,7 +59,7 @@ public class QuizStateMachine {
                     return gson.toJson(new qwa.messages.Question(quiz, current, 0));
                 } else if (skipped.isEmpty()) {
                     state = FINISHED;
-                    return gson.toJson(new qwa.messages.Summary(score, correct));
+                    return gson.toJson(new qwa.messages.Summary(score, total, correct));
                 } else {
                     state = SKIPPED;
                     return gson.toJson(new qwa.messages.Skipped(skipped, quiz.getQuestions()));
@@ -143,6 +144,7 @@ public class QuizStateMachine {
 
     private int current = 0;
     private int score = 0;
+    private int total = 0;
 
     private boolean partial = false;
     private boolean submitted = false;

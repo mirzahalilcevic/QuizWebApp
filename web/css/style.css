@@ -1,6 +1,6 @@
 body {
     color: #b0b0b1;
-    background-color: #17141f;
+    background: radial-gradient(ellipse at top, #1B2735 0%, #17141f 80%) fixed;
 }
 
 .wrapper {
@@ -11,14 +11,30 @@ body {
     width: 540px;
 }
 
+.quiz-summary {
+    width: 380px;
+}
+
 .time-progress {
-    margin-top: 2%;
-    margin-bottom: 1%;
+    background-color: #17141f !important;
+    margin: 2% auto;
+}
+
+.checkbox-custom [type="checkbox"]:checked + label:before {
+    border-color: transparent #2d97d1 #2d97d1 transparent;
 }
 
 .card-body, .list-group-item {
     color: #b0b0b1 !important;
     background-color: #1a1824 !important;
+}
+
+.form-check-label {
+    margin: 0.5% 0;
+}
+
+.md-form {
+    color: #ffffff !important;
 }
 
 #particles canvas {

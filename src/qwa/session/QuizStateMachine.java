@@ -22,7 +22,7 @@ public class QuizStateMachine {
         switch (state) {
             case INIT:
                 state = QUESTION;
-                return gson.toJson(new qwa.messages.Question(quiz, current, 0));
+                return gson.toJson(new qwa.messages.Question(quiz, current, 0, null));
             default:
                 return null;
         }
@@ -35,12 +35,15 @@ public class QuizStateMachine {
             case QUESTION:
                 var question = quiz.getQuestions().get(current);
                 total += question.getPoints();
-                if (event.check(question.getAnswers())) {
+                boolean isCorrect = event.check(question.getAnswers());
+                if (isCorrect) {
                     correct.add(current);
                     score += question.getPoints();
                 }
                 state = ANSWERED;
-                return process(new Next()); // trigger next question
+                var next = new Next();
+                next.correct = isCorrect;
+                return process(next); // trigger next question
             default:
                 return null;
         }
@@ -56,13 +59,13 @@ public class QuizStateMachine {
                 advance();
                 if (current < quiz.getQuestions().size()) {
                     state = QUESTION;
-                    return gson.toJson(new qwa.messages.Question(quiz, current, 0));
+                    return gson.toJson(new qwa.messages.Question(quiz, current, 0, event.correct));
                 } else if (skipped.isEmpty()) {
                     state = FINISHED;
-                    return gson.toJson(new qwa.messages.Summary(score, total, correct));
+                    return gson.toJson(new qwa.messages.Summary(score, total, correct, event.correct));
                 } else {
                     state = SKIPPED;
-                    return gson.toJson(new qwa.messages.Skipped(skipped, quiz.getQuestions()));
+                    return gson.toJson(new qwa.messages.Skipped(skipped, quiz.getQuestions(), event.correct));
                 }
             default:
                 return null;
@@ -78,9 +81,9 @@ public class QuizStateMachine {
                 skipped.put(current, event.remaining);
                 advance();
                 if (current < quiz.getQuestions().size())
-                    return gson.toJson(new qwa.messages.Question(quiz, current, 0));
+                    return gson.toJson(new qwa.messages.Question(quiz, current, 0, null));
                 state = SKIPPED;
-                return gson.toJson(new qwa.messages.Skipped(skipped, quiz.getQuestions()));
+                return gson.toJson(new qwa.messages.Skipped(skipped, quiz.getQuestions(), null));
             default:
                 return null;
         }
@@ -98,7 +101,7 @@ public class QuizStateMachine {
                 skipped.remove(event.question);
                 current = event.question;
                 state = QUESTION;
-                return gson.toJson(new qwa.messages.Question(quiz, current, remaining));
+                return gson.toJson(new qwa.messages.Question(quiz, current, remaining, null));
             default:
                 return null;
         }

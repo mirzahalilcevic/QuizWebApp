@@ -5,12 +5,13 @@ import java.util.List;
 
 public class Question {
 
-    public Question(qwa.domain.Quiz quiz, int number, int remaining) {
+    public Question(qwa.domain.Quiz quiz, int number, int remaining, Boolean correct) {
 
         this.number = number;
         var question = quiz.getQuestions().get(number);
 
         this.remaining = remaining == 0 ? question.getTime() : remaining;
+        this.correct = correct;
 
         this.text = question.getText();
         this.time = question.getTime();
@@ -25,6 +26,8 @@ public class Question {
 
     private int number;
     private int remaining;
+
+    private Boolean correct;
 
     private String text;
     private List<String> answers;

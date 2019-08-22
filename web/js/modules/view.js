@@ -1,4 +1,4 @@
-class View {
+export default class View {
 
     constructor(id, num_questions) {
 
@@ -59,6 +59,8 @@ class View {
 
     show_question(data) {
 
+        this.show_answer(data.correct);
+
         $(this.id_selector + ' .question-counter').text(data.number + 1 + ' of ' + this.num_questions);
         $(this.id_selector + ' .question-text').html(data.text);
 
@@ -86,10 +88,13 @@ class View {
 
         $(this.id_selector + ' .next-button').attr('disabled', true);
         $(this.id_selector + ' .skip-button').attr('disabled', false);
+
         $(this.id_selector + ' .time-progress-bar').attr('data-time', data.time);
 
         this.checked = 0;
         this.update_progress(data.remaining);
+
+        $(this.id_selector + ' .quiz-question').attr('data-points', data.points);
 
         $(this.id_selector + ' .quiz-question').css({
             'opacity': '0.0'
@@ -101,6 +106,8 @@ class View {
     }
 
     show_skipped(data) {
+
+        this.show_answer(data.correct);
 
         let list = $(this.id_selector + ' .skipped-questions');
         list.empty();
@@ -121,6 +128,8 @@ class View {
     }
 
     show_summary(data) {
+
+        this.show_answer(data.isCorrect);
 
         let percent = data.score / data.total * 100;
         $(this.id_selector + ' .summary-chart').attr('data-percent', percent);
@@ -159,6 +168,12 @@ class View {
             'opacity': '1.0',
             'margin-top': '0'
         }, 400, 'linear');
+    }
+
+    show_answer(correct) {
+        let points = $(this.id_selector + ' .quiz-question').attr('data-points');
+        correct !== undefined && (correct ? toastr.success('+' + points + ' points')
+            : toastr.error('Incorrect'));
     }
 
     make_skipped(number, remaining, question) {
@@ -280,64 +295,3 @@ class View {
         }
     }
 }
-
-class Controller {
-
-    constructor(id, view) {
-        this.id = id;
-        this.view = view;
-    }
-
-    send(event, data, callback) {
-
-        let msg = 'event=' + event;
-        if (data !== null) {
-            switch (event) {
-                case 'answer':
-                    msg += '&answers=' + JSON.stringify({answers: data});
-                    break;
-                case 'skip':
-                    msg += '&remaining=' + JSON.stringify({remaining: data});
-                    break;
-                case 'revisit':
-                    msg += '&question=' + JSON.stringify({question: data});
-                    break;
-                case 'submit':
-                    msg += '&info=' + JSON.stringify(data);
-                    break;
-            }
-        }
-
-        $.post('/quiz/' + this.id, msg, callback, 'json');
-    }
-
-    terminate() {
-        this.send('terminate', null, null);
-    }
-
-    start() {
-        this.view.hide_home(
-            () => this.send('start', null, data => this.view.handle(data)));
-    }
-
-    next() {
-        this.view.hide_question(
-            () => this.send('answer', this.view.get_answers(), data => this.view.handle(data)));
-    }
-
-    skip() {
-        this.view.hide_question(
-            () => this.send('skip', this.view.get_remaining(), data => this.view.handle(data)));
-    }
-
-    revisit(question) {
-        this.view.hide_skipped(
-            () => this.send('revisit', question, data => this.view.handle(data)));
-    }
-
-    submit() {
-        this.view.submit();
-        this.send('submit', this.view.get_info(), data => this.view.handle(data));
-    }
-}
-

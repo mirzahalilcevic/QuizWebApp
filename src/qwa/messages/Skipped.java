@@ -6,8 +6,9 @@ import java.util.Map;
 
 public class Skipped {
 
-    public Skipped(Map<Integer, Integer> skipped, List<qwa.domain.Question> questions) {
+    public Skipped(Map<Integer, Integer> skipped, List<qwa.domain.Question> questions, Boolean correct) {
 
+        this.correct = correct;
         this.skipped = skipped;
 
         this.questions = new ArrayList<>();
@@ -17,6 +18,7 @@ public class Skipped {
 
     private final String type = "skipped";
 
+    private Boolean correct;
     private Map<Integer, Integer> skipped;
     private List<String> questions;
 }

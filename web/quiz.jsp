@@ -1,4 +1,5 @@
 <%@ page import="qwa.domain.Quiz" %>
+<%@ page import="qwa.domain.Editor" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <!DOCTYPE html>
@@ -24,6 +25,22 @@
 
 </head>
 <body>
+
+<nav class="navbar justify-content-end animated fadeIn">
+    <%
+        Object user = request.getSession().getAttribute("user");
+        if (user == null) {
+    %>
+    <button type="button" class="btn blue-gradient btn-rounded btn-sm"
+            onclick="window.location='<%=request.getContextPath()%>/login'">
+        Log In
+    </button>
+    <% } else if (user instanceof Editor) { %>
+    <span><%=((Editor) user).getUsername()%></span>
+    <% } else { %>
+    <span><%=(String) user%></span>
+    <% } %>
+</nav>
 
 <div id="particles"></div>
 
@@ -82,11 +99,19 @@
     });
 
     view.subscribe_revisit((question) => controller.revisit(question));
-   
+
 
     $(window).on('beforeunload', function () {
         controller.terminate();
+        socket.close();
     });
+
+
+    let socket = new WebSocket("ws://<%=request.getServerName()%>:<%=request.getServerPort()%>/players");
+
+    socket.onmessage = function (event) {
+        console.log(event.data);
+    };
 
 </script>
 

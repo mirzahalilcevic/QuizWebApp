@@ -32,7 +32,18 @@ public abstract class AbstractDao {
 
         var em = createEntityManager();
 
-        var q = em.createQuery("SELECT x FROM " + c.getSimpleName() + " x").setMaxResults(n).setFirstResult(offset);
+        var q = em.createQuery("SELECT x FROM " + c.getSimpleName() + " x ORDER BY x.id DESC").setMaxResults(n).setFirstResult(offset);
+        var ret = (List<Object>) q.getResultList();
+
+        em.close();
+        return ret;
+    }
+
+    public static List<Object> get(Class c) {
+
+        var em = createEntityManager();
+
+        var q = em.createQuery("SELECT x FROM " + c.getSimpleName() + " x ORDER BY x.id DESC");
         var ret = (List<Object>) q.getResultList();
 
         em.close();
@@ -66,13 +77,14 @@ public abstract class AbstractDao {
         var em = createEntityManager();
 
         em.getTransaction().begin();
+        if (!em.contains(o)) o = em.merge(o);
         em.remove(o);
         em.getTransaction().commit();
 
         em.close();
     }
 
-    private static EntityManager createEntityManager() {
+    protected static EntityManager createEntityManager() {
         var emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT);
         return emf.createEntityManager();
     }

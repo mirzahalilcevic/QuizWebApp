@@ -69,6 +69,8 @@ public class QuizServlet extends HttpServlet {
         }
     }
 
+    private final Gson gson = new Gson();
+
     private int id(String path) throws NumberFormatException {
         return Integer.parseInt(path.substring(1));
     }
@@ -122,6 +124,4 @@ public class QuizServlet extends HttpServlet {
         out.print(json);
         out.flush();
     }
-
-    private final Gson gson = new Gson();
 }

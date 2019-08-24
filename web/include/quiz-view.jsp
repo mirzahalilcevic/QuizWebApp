@@ -149,7 +149,7 @@
                 <div class="col">
                     <!-- Last name -->
                     <div class="md-form">
-                        <input type="email" id="input2<%=((Quiz) request.getAttribute("quiz")).getId()%>"
+                        <input type="text" id="input2<%=((Quiz) request.getAttribute("quiz")).getId()%>"
                                class="form-control last-name text-white">
                         <label for="input2<%=((Quiz) request.getAttribute("quiz")).getId()%>">Last name</label>
                     </div>
@@ -158,7 +158,7 @@
 
             <!-- E-mail -->
             <div class="md-form mt-0">
-                <input type="email" id="input3<%=((Quiz) request.getAttribute("quiz")).getId()%>"
+                <input type="text" id="input3<%=((Quiz) request.getAttribute("quiz")).getId()%>"
                        class="form-control email text-white">
                 <label for="input3<%=((Quiz) request.getAttribute("quiz")).getId()%>">E-mail</label>
             </div>

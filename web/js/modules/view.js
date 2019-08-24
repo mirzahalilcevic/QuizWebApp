@@ -11,15 +11,20 @@ export default class View {
         this.interval = undefined;
 
         this.revisit_callback = undefined;
+
+        toastr.options = {
+            "positionClass": "md-toast-bottom-right",
+            "timeOut": "3000"
+        };
     }
 
     hide_home(callback) {
         $(this.id_selector + ' .quiz-home .card-body').animate({
             'margin-top': '-30%'
-        }, 600, 'swing', () => $(this.id_selector + ' .quiz-home').animate({
+        }, 500, 'swing', () => $(this.id_selector + ' .quiz-home').animate({
             'opacity': '0.0',
             'margin-top': '-5%'
-        }, 400, 'linear', () => {
+        }, 300, 'linear', () => {
             $(this.id_selector + ' .quiz-home').hide();
             callback();
         })).delay(250);

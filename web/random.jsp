@@ -1,6 +1,7 @@
 <%@ page import="qwa.domain.Quiz" %>
 <%@ page import="qwa.service.QuizService" %>
 <%@ page import="java.util.List" %>
+<%@ page import="qwa.domain.Editor" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <%! private final QuizService service = new QuizService(); %>
@@ -26,6 +27,22 @@
 
 </head>
 <body>
+
+<nav class="navbar justify-content-end animated fadeIn">
+    <%
+        Object user = request.getSession().getAttribute("user");
+        if (user == null) {
+    %>
+    <button type="button" class="btn blue-gradient btn-rounded btn-sm"
+            onclick="window.location='<%=request.getContextPath()%>/login'">
+        Log In
+    </button>
+    <% } else if (user instanceof Editor) { %>
+    <span><%=((Editor) user).getUsername()%></span>
+    <% } else { %>
+    <span><%=(String) user%></span>
+    <% } %>
+</nav>
 
 <div id="particles"></div>
 
@@ -96,7 +113,15 @@
         <% for (int i = 0; i < quizzes.size(); i++) { %>
         controller<%=i%>.terminate();
         <% } %>
+        return 'Are you sure?';
     });
+
+
+    let socket = new WebSocket("ws://<%=request.getServerName()%>:<%=request.getServerPort()%>/players");
+
+    socket.onmessage = function (event) {
+        console.log(event.data);
+    };
 
 </script>
 

@@ -5,16 +5,12 @@ import qwa.events.Submit;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "results")
-public class Result {
+@Table(name = "players")
+public class Player {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-
-    @ManyToOne
-    @JoinColumn(name = "quiz_id", nullable = false)
-    private Quiz quiz;
 
     @Column(name = "first_name")
     private String firstName;
@@ -22,21 +18,16 @@ public class Result {
     @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "score", nullable = false)
-    private int score;
-
-    public Result() {
+    public Player() {
     }
 
-    public Result(Quiz quiz, Submit event, int score) {
-        this.quiz = quiz;
+    public Player(Submit event) {
         this.firstName = event.firstName;
         this.lastName = event.lastName;
         this.email = event.email;
-        this.score = score;
     }
 
     public int getId() {
@@ -55,14 +46,6 @@ public class Result {
         return email;
     }
 
-    public int getScore() {
-        return score;
-    }
-
-    public Quiz getQuiz() {
-        return quiz;
-    }
-
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -73,13 +56,5 @@ public class Result {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-    }
-
-    public void setQuiz(Quiz quiz) {
-        this.quiz = quiz;
     }
 }

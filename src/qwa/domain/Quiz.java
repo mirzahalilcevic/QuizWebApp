@@ -11,6 +11,10 @@ public class Quiz {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
+    @ManyToOne
+    @JoinColumn(name = "editor_id")
+    private Editor editor;
+
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -23,7 +27,7 @@ public class Quiz {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "quiz_id")
-    private List<Result> results;
+    private List<Score> scores;
 
     @Column(name = "active", nullable = false)
     private boolean active;
@@ -33,6 +37,10 @@ public class Quiz {
 
     public int getId() {
         return id;
+    }
+
+    public Editor getEditor() {
+        return editor;
     }
 
     public String getName() {
@@ -47,8 +55,16 @@ public class Quiz {
         return questions;
     }
 
+    public List<Score> getScores() {
+        return scores;
+    }
+
     public boolean isActive() {
         return active;
+    }
+
+    public void setEditor(Editor editor) {
+        this.editor = editor;
     }
 
     public void setName(String name) {
@@ -61,6 +77,10 @@ public class Quiz {
 
     public void setQuestions(List<Question> questions) {
         this.questions = questions;
+    }
+
+    public void setScores(List<Score> scores) {
+        this.scores = scores;
     }
 
     public void activate() {

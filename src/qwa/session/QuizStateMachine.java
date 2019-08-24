@@ -2,8 +2,10 @@ package qwa.session;
 
 import com.google.gson.Gson;
 import qwa.dao.AbstractDao;
+import qwa.dao.PlayerDao;
+import qwa.domain.Player;
 import qwa.domain.Quiz;
-import qwa.domain.Result;
+import qwa.domain.Score;
 import qwa.events.*;
 
 import java.util.ArrayList;
@@ -111,14 +113,13 @@ public class QuizStateMachine {
     public String process(Submit event) {
         switch (state) {
             case FINISHED:
-                var result = new Result(quiz, event, score);
                 try {
-                    AbstractDao.save(result);
+                    AbstractDao.save(score(event));
                     submitted = true;
                     state = ZOMBIE;
-                    return gson.toJson(new qwa.messages.Ack(true));
+                    return gson.toJson(new qwa.messages.Ack(true, null));
                 } catch (Exception e) {
-                    return gson.toJson(new qwa.messages.Ack(false));
+                    return gson.toJson(new qwa.messages.Ack(false, null));
                 }
             default:
                 return null;
@@ -161,11 +162,24 @@ public class QuizStateMachine {
     private static final int ZOMBIE = 5;
 
     private final Gson gson = new Gson();
+    private final PlayerDao dao = new PlayerDao();
 
     private void advance() {
         if (partial)
             current = quiz.getQuestions().size();
         else
             current++;
+    }
+
+    private Score score(Submit event) {
+        var player = dao.get(event.email);
+        if (player == null) {
+            player = new Player(event);
+            AbstractDao.save(player);
+        } else {
+            player.setFirstName(event.firstName);
+            player.setLastName(event.lastName);
+        }
+        return new Score(quiz, player, score);
     }
 }

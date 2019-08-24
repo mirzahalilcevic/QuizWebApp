@@ -2,6 +2,7 @@ package qwa.console;
 
 import qwa.dao.AbstractDao;
 import qwa.domain.Answer;
+import qwa.domain.Editor;
 import qwa.domain.Question;
 import qwa.domain.Quiz;
 
@@ -12,9 +13,18 @@ public class BootstrapApp {
 
     public static void main(String[] args) {
 
+        var editor = new Editor();
+        editor.setFirstName("Mirza");
+        editor.setLastName("Halilcevic");
+        editor.setUsername("mirza");
+        editor.setPassword("mirza");
+
+        AbstractDao.save(editor);
+
         for (int i = 0; i < 10; ++i) {
 
             var quiz = new Quiz();
+            quiz.setEditor(editor);
             quiz.setName("Quiz " + i);
             quiz.setDescription(quiz.getName() + " description");
             quiz.setQuestions(createQuestions(5));

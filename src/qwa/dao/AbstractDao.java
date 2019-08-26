@@ -32,7 +32,7 @@ public abstract class AbstractDao {
 
         var em = createEntityManager();
 
-        var q = em.createQuery("SELECT x FROM " + c.getSimpleName() + " x ORDER BY x.id DESC").setMaxResults(n).setFirstResult(offset);
+        var q = em.createQuery("SELECT x FROM " + c.getSimpleName() + " x").setMaxResults(n).setFirstResult(offset);
         var ret = (List<Object>) q.getResultList();
 
         em.close();
@@ -43,7 +43,7 @@ public abstract class AbstractDao {
 
         var em = createEntityManager();
 
-        var q = em.createQuery("SELECT x FROM " + c.getSimpleName() + " x ORDER BY x.id DESC");
+        var q = em.createQuery("SELECT x FROM " + c.getSimpleName() + " x");
         var ret = (List<Object>) q.getResultList();
 
         em.close();

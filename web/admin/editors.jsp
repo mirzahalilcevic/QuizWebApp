@@ -23,12 +23,6 @@
     <link href="<%=request.getContextPath()%>/css/addons/datatables.min.css" rel="stylesheet">
     <!-- Custom styles -->
     <link href="<%=request.getContextPath()%>/css/style.css" rel="stylesheet">
-    <style>
-        body {
-            color: #b0b0b1;
-            background: #17141f;
-        }
-    </style>
 
 </head>
 <body>
@@ -68,7 +62,7 @@
                 </div>
 
                 <div class="md-form">
-                    <input type="text" id="password" class="form-control text-white" required>
+                    <input type="password" id="password" class="form-control text-white" required>
                     <label for="password">Password</label>
                     <div class="invalid-feedback">
                         Please choose a password.
@@ -89,13 +83,17 @@
     </div>
 </div>
 
-<div class="container wrapper">
+<div class="animated fadeIn fast">
+    <%@ include file="/include/navigation.jsp" %>
+</div>
+
+<div class="container wrapper animated fadeIn fast">
     <div class="row">
 
         <div class="col flex-center">
             <div class="table-responsive table-borderless text-nowrap">
 
-                <table class="table text-white" id="editor-table">
+                <table class="table text-white" id="editor-table" style="margin-top: 3%;">
                     <caption>List of editors</caption>
                     <thead>
                     <tr>
@@ -106,51 +104,51 @@
                         <th scope="col" class="text-right">
                             <button type="button" class="btn btn-sm btn-primary btn-rounded waves-effect"
                                     id="add-button" data-toggle="modal" data-target="#editor-modal">
-                                <i class="fas fa-plus"></i> Add
+                                <i class="fas fa-plus mr-1"></i>&nbsp; Add
                             </button>
                         </th>
                     </tr>
                     </thead>
                     <tbody>
                     <%
-                        List<Object> editors = AbstractDao.get(Editor.class);
-                        for (Object editor : editors) {
+                        List<Editor> editors = (List<Editor>) (List<?>) AbstractDao.get(Editor.class);
+                        for (Editor editor : editors) {
                     %>
                     <tr>
                         <td class="align-middle">
                             <div class="md-form">
-                                <input type="text" id="first-name-<%=((Editor) editor).getId()%>"
-                                       class="form-control text-white" value="<%=((Editor) editor).getFirstName()%>">
-                                <label for="first-name-<%=((Editor) editor).getId()%>">First name</label>
+                                <input type="text" id="first-name-<%=editor.getId()%>"
+                                       class="form-control text-white" value="<%=editor.getFirstName()%>">
+                                <label for="first-name-<%=editor.getId()%>">First name</label>
                             </div>
                         </td>
                         <td class="align-middle">
                             <div class="md-form">
-                                <input type="text" id="last-name-<%=((Editor) editor).getId()%>"
-                                       class="form-control text-white" value="<%=((Editor) editor).getLastName()%>">
-                                <label for="last-name-<%=((Editor) editor).getId()%>">Last name</label>
+                                <input type="text" id="last-name-<%=editor.getId()%>"
+                                       class="form-control text-white" value="<%=editor.getLastName()%>">
+                                <label for="last-name-<%=editor.getId()%>">Last name</label>
                             </div>
                         </td>
                         <td class="align-middle">
                             <div class="md-form">
-                                <input type="text" id="username-<%=((Editor) editor).getId()%>"
-                                       class="form-control text-white" value="<%=((Editor) editor).getUsername()%>">
-                                <label for="username-<%=((Editor) editor).getId()%>">Username</label>
+                                <input type="text" id="username-<%=editor.getId()%>"
+                                       class="form-control text-white" value="<%=editor.getUsername()%>">
+                                <label for="username-<%=editor.getId()%>">Username</label>
                             </div>
                         </td>
                         <td class="align-middle">
                             <div class="md-form">
-                                <input type="text" id="password-<%=((Editor) editor).getId()%>"
-                                       class="form-control text-white" value="<%=((Editor) editor).getPassword()%>">
-                                <label for="password-<%=((Editor) editor).getId()%>">Password</label>
+                                <input type="password" id="password-<%=editor.getId()%>"
+                                       class="form-control text-white" value="">
+                                <label for="password-<%=editor.getId()%>">Password</label>
                             </div>
                         </td>
-                        <td class="text-right align-middle" data-id="<%=((Editor) editor).getId()%>">
+                        <td class="text-right align-middle" data-id="<%=editor.getId()%>">
                             <button type="button" class="btn btn-sm btn-secondary btn-rounded waves-effect edit-button">
-                                <i class="fas fa-magic mr-1"></i> Edit
+                                <i class="fas fa-magic mr-1"></i>&nbsp; Edit
                             </button>
                             <button type="button" class="btn btn-sm btn-danger btn-rounded waves-effect delete-button">
-                                <i class="fas fa-times"></i> Delete
+                                <i class="fas fa-times mr-1"></i>&nbsp; Delete
                             </button>
                         </td>
                     </tr>
@@ -178,6 +176,7 @@
 <!-- Custom scripts -->
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/admin/editors.js"></script>
 <script>
+
     $(document).ready(function () {
         $('#editor-table').DataTable({
             "ordering": false,
@@ -185,6 +184,14 @@
         });
         $('.dataTables_length').addClass('bs-select');
     });
+
+
+    let socket = new WebSocket("ws://<%=request.getServerName()%>:<%=request.getServerPort()%>/players");
+
+    socket.onmessage = function (event) {
+        $('#player-count').text('Players: ' + event.data);
+    };
+
 </script>
 
 </body>

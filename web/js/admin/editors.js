@@ -12,28 +12,20 @@ function edit_handler() {
         return;
     }
 
-    if (password === "") {
-        toastr.error("Password can't be empty.");
-        return;
-    }
-
     let msg = 'firstName=' + first_name
         + '&lastName=' + last_name
-        + '&username=' + username
-        + '&password=' + password;
+        + '&username=' + username;
+
+    if (password !== "")
+        msg = msg + '&password=' + password;
 
     $(this).html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>').addClass('disabled');
-    $.ajax({
-        url: '/admin/editor/' + id,
-        method: 'POST',
-        data: msg,
-        success: data => {
-            if (data.success)
-                toastr.success("Done.");
-            else
-                toastr.error(data.message);
-            $(this).html('<i class="fas fa-magic mr-1"></i> Edit').removeClass('disabled');
-        }
+    $.post('/admin/editor/' + id, msg, data => {
+        if (data.success)
+            toastr.success("Done.");
+        else
+            toastr.error(data.message);
+        $(this).html('<i class="fas fa-magic mr-1"></i> Edit').removeClass('disabled');
     });
 }
 
@@ -48,12 +40,14 @@ function delete_handler() {
         url: '/admin/editor/' + id,
         method: 'DELETE',
         success: data => {
-            if (data.success) {
-                toastr.success("Done.");
-                $(this).parent().parent().fadeOut(500, () => $(this).parent().parent().remove());
-            } else {
+            if (data.success)
+                $(this).parent().parent().fadeOut(300, () => {
+                    toastr.success("Done.");
+                    $(this).parent().parent().remove()
+                });
+            else {
                 toastr.error(data.message);
-                $(this).html('<i class="fas fa-times"></i> Edit').removeClass('disabled');
+                $(this).html('<i class="fas fa-times"></i> Delete').removeClass('disabled');
             }
         }
     });
@@ -79,42 +73,37 @@ $('#save-button').click(function () {
         + '&password=' + password;
 
     $(this).html('<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>').addClass('disabled');
-    $.ajax({
-        url: '/admin/editor',
-        method: 'POST',
-        data: msg,
-        success: data => {
-            if (data.success) {
+    $.post('/admin/editor', msg, data => {
+        if (data.success) {
 
-                toastr.success("Done.");
+            toastr.success("Done.");
 
-                $('#editor-modal').modal('hide');
-                $('#first-name').val('');
-                $('#last-name').val('');
-                $('#username').val('');
-                $('#password').val('');
+            $('#editor-modal').modal('hide');
+            $('#first-name').val('');
+            $('#last-name').val('');
+            $('#username').val('');
+            $('#password').val('');
 
-                $('#editor-table tbody').prepend(create_row(data.message, first_name, last_name, username, password));
-                $('#editor-table tbody tr:first-child input').focus();
-                $('#editor-table tbody tr:first-child .edit-button').click(edit_handler);
-                $('#editor-table tbody tr:first-child .delete-button').click(delete_handler);
+            $('#editor-table tbody').prepend(create_row(data.message, first_name, last_name, username, password));
+            $('#editor-table tbody tr:first-child input').focus();
+            $('#editor-table tbody tr:first-child .edit-button').click(edit_handler);
+            $('#editor-table tbody tr:first-child .delete-button').click(delete_handler);
 
-            } else {
-                toastr.error(data.message);
-                $(this).text('Save').removeClass('disabled');
-            }
-        }
+        } else
+            toastr.error(data.message);
+
+        $(this).text('Save').removeClass('disabled');
     });
 });
 
 function create_row(id, first_name, last_name, username, password) {
-    return '<tr class="animated fadeIn">'
+    return '<tr class="animated fadeIn fast">'
         + '<td class="align-middle"><div class="md-form"><input type="text" id="first-name-' + id + '" class="form-control text-white" value="' + first_name + '"><label for="first-name-' + id + '">First name</label></div></td>'
         + '<td class="align-middle"><div class="md-form"><input type="text" id="last-name-' + id + '" class="form-control text-white" value="' + last_name + '"><label for="last-name-' + id + '">Last name</label></div></td>'
         + '<td class="align-middle"><div class="md-form"><input type="text" id="username-' + id + '" class="form-control text-white" value="' + username + '"><label for="username-' + id + '">Username</label></div></td>'
-        + '<td class="align-middle"><div class="md-form"><input type="text" id="password-' + id + '" class="form-control text-white" value="' + password + '"><label for="password-' + id + '">Password</label></div></td>'
+        + '<td class="align-middle"><div class="md-form"><input type="password" id="password-' + id + '" class="form-control text-white" value="' + password + '"><label for="password-' + id + '">Password</label></div></td>'
         + '<td class="text-right align-middle" data-id="' + id + '">'
-        + '<button type="button" class="btn btn-sm btn-secondary btn-rounded waves-effect edit-button"><i class="fas fa-magic mr-1"></i> Edit</button>'
-        + '<button type="button" class="btn btn-sm btn-danger btn-rounded waves-effect delete-button"><i class="fas fa-times"></i> Delete</button>'
+        + '<button type="button" class="btn btn-sm btn-secondary btn-rounded waves-effect edit-button"><i class="fas fa-magic mr-1"></i>&nbsp; Edit</button>'
+        + '<button type="button" class="btn btn-sm btn-danger btn-rounded waves-effect delete-button"><i class="fas fa-times"></i>&nbsp; Delete</button>'
         + '</td></tr>';
 }

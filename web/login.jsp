@@ -22,13 +22,13 @@
 </head>
 <body>
 
-<div id="particles"></div>
+<div id="particles" class="animated fadeIn fast"></div>
 
-<div class="container wrapper">
-    <div class="row">
+<div class="container">
+    <div class="row" style="height: 100vh">
 
-        <div class="col flex-center animated fadeIn">
-            <div class="card" style="margin-top: 10%">
+        <div class="col flex-center animated fadeInDown fast">
+            <div class="card">
 
                 <div class="card-body text-center">
 
@@ -43,7 +43,7 @@
                     <span class="text-danger"><%=error%></span>
                     <% } %>
 
-                    <form class="text-center" action="<%=request.getContextPath()%>/login" method="post">
+                    <form class="text-center">
 
                         <div class="md-form">
                             <input type="text" id="username" class="form-control text-white" name="username">
@@ -54,15 +54,16 @@
                             <input type="password" id="password" class="form-control text-white" name="password">
                             <label for="password">Password</label>
                         </div>
-
-                        <button class="btn blue-gradient btn-rounded btn-block waves-effect z-depth-0"
-                                type="submit">
+                        <br>
+                        <button type="button"
+                                class="btn btn-sm blue-gradient btn-rounded btn-block waves-effect z-depth-0"
+                                id="login-button">
                             Log in
                         </button>
 
                     </form>
                     <br>
-                    <button class="btn btn-outline-info btn-rounded btn-block waves-effect z-depth-0"
+                    <button class="btn btn-sm btn-outline-info btn-rounded btn-block waves-effect z-depth-0"
                             onclick="window.history.back()">
                         Back
                     </button>
@@ -89,6 +90,8 @@
 <script>
     particlesJS.load('particles', '<%=request.getContextPath()%>/assets/particles.json');
 </script>
+<!-- Custom scripts -->
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/login.js"></script>
 
 </body>
 </html>

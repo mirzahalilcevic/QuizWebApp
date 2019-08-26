@@ -11,9 +11,8 @@ public class Quiz {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @ManyToOne
-    @JoinColumn(name = "editor_id")
-    private Editor editor;
+    @Column(name = "image")
+    private String image;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -21,26 +20,38 @@ public class Quiz {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "quiz_id", nullable = false)
     private List<Question> questions;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "quiz_id")
     private List<Score> scores;
 
     @Column(name = "active", nullable = false)
     private boolean active;
 
+    @Column(name = "editor")
+    private String editor;
+
     public Quiz() {
+    }
+
+    public Quiz(String editor, String image, String name, String description, List<Question> questions, boolean active) {
+        this.editor = editor;
+        this.image = image;
+        this.name = name;
+        this.description = description;
+        this.questions = questions;
+        this.active = active;
     }
 
     public int getId() {
         return id;
     }
 
-    public Editor getEditor() {
-        return editor;
+    public String getImage() {
+        return image;
     }
 
     public String getName() {
@@ -63,8 +74,8 @@ public class Quiz {
         return active;
     }
 
-    public void setEditor(Editor editor) {
-        this.editor = editor;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public void setName(String name) {

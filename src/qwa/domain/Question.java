@@ -14,7 +14,7 @@ public class Question {
     @Column(name = "text", nullable = false)
     private String text;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "question_id", nullable = false)
     private List<Answer> answers;
 
@@ -25,6 +25,13 @@ public class Question {
     private int points;
 
     public Question() {
+    }
+
+    public Question(String text, List<Answer> answers, int time, int points) {
+        this.text = text;
+        this.answers = answers;
+        this.time = time;
+        this.points = points;
     }
 
     public int getId() {

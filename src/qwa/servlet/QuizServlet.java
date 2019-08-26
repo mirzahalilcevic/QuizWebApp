@@ -5,10 +5,12 @@ import com.google.gson.JsonParseException;
 import qwa.dao.AbstractDao;
 import qwa.domain.Quiz;
 import qwa.events.*;
+import qwa.service.QuizService;
 import qwa.session.CompletedQuizHelper;
 import qwa.session.QuizStateMachine;
 
 import javax.persistence.NoResultException;
+import javax.persistence.SynchronizationType;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -27,6 +29,11 @@ public class QuizServlet extends HttpServlet {
 
             int id = id(req.getPathInfo());
             var quiz = (Quiz) AbstractDao.get(Quiz.class, id);
+
+            if (!quiz.isActive()) {
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST);
+                return;
+            }
 
             req.setAttribute("quiz", quiz);
             req.getRequestDispatcher("/quiz.jsp").forward(req, resp);
@@ -48,6 +55,8 @@ public class QuizServlet extends HttpServlet {
                 req.getSession().setAttribute("playing", playing);
             }
 
+            System.out.println("Playing: " + playing.size());
+
             int id = id(req.getPathInfo());
             var sm = playing.get(id);
             if (sm == null) {
@@ -59,8 +68,10 @@ public class QuizServlet extends HttpServlet {
             if (message != null)
                 sendJson(resp, message);
 
-            if (sm.submitted())
-                CompletedQuizHelper.add(req, resp, id);
+            if (sm.submitted()) {
+                CompletedQuizHelper.add(req, id);
+                CompletedQuizHelper.print(req);
+            }
 
             if (sm.done())
                 playing.remove(id);
@@ -70,8 +81,10 @@ public class QuizServlet extends HttpServlet {
     }
 
     private final Gson gson = new Gson();
+    private final QuizService service = new QuizService();
 
     private int id(String path) throws NumberFormatException {
+        if (path == null) throw new NumberFormatException();
         return Integer.parseInt(path.substring(1));
     }
 

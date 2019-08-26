@@ -22,15 +22,40 @@
 </head>
 <body>
 
-<div style="height: 100vh">
-    <div class="flex-center flex-column">
+<div class="animated flash">
+    <%@ include file="/include/navigation.jsp" %>
+</div>
 
-        <h1 class="text-hide animated fadeIn mb-4"
-            style="background-image: url('https://mdbootstrap.com/img/logo/mdb-transparent-250px.png'); width: 250px; height: 90px;">
-            MDBootstrap</h1>
-        <h5 class="animated fadeIn mb-3">Thank you for using our product. We're glad you're with us.</h5>
+<div id="particles" class="animated zoomIn slow"></div>
 
-        <p class="animated fadeIn text-muted">MDB Team</p>
+<div class="container">
+    <div class="row" style="margin-top: 15%">
+
+        <div class="col flex-center animated zoomIn slow">
+            <div style="width: 300px">
+
+                <button type="button" class="btn btn-lg blue-gradient btn-rounded btn-block"
+                        onclick="window.location='<%=request.getContextPath()%>/quiz/random'">
+                    <i class="fas fa-dice-five"></i>&nbsp; Play random
+                </button>
+                <br>
+                <button type="button" class="btn btn-lg blue-gradient btn-rounded btn-block"
+                        onclick="window.location='<%=request.getContextPath()%>/quiz/random?n=2'">
+                    <i class="fas fa-dice"></i>&nbsp; Play 2 random
+                </button>
+                <br>
+                <button type="button" class="btn btn-lg blue-gradient btn-rounded btn-block"
+                        onclick="window.location='<%=request.getContextPath()%>/quiz/browse'">
+                    <i class="fas fa-search"></i>&nbsp; Browse
+                </button>
+                <br><br>
+                <p class="text-center animated fadeIn delay-2s">
+                    Mirza Halilčević &middot; Jasmin Hadžić
+                </p>
+
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -43,6 +68,21 @@
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/bootstrap.min.js"></script>
 <!-- MDB core JavaScript -->
 <script type="text/javascript" src="<%=request.getContextPath()%>/js/mdb.min.js"></script>
+<!-- Particles -->
+<script type="text/javascript" src="<%=request.getContextPath()%>/js/particles.min.js"></script>
+<script>
+    particlesJS.load('particles', '<%=request.getContextPath()%>/assets/particles.json');
+</script>
+<!-- Custom scripts -->
+<script>
+
+    let socket = new WebSocket("ws://<%=request.getServerName()%>:<%=request.getServerPort()%>/players");
+
+    socket.onmessage = function (event) {
+        $('#player-count').text('Players: ' + event.data);
+    };
+
+</script>
 
 </body>
 </html>

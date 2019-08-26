@@ -3,6 +3,7 @@ package qwa.servlet;
 import com.google.gson.Gson;
 import qwa.dao.EditorDao;
 import qwa.messages.Ack;
+import qwa.util.SecurityUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,6 +20,14 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        var logout = req.getParameter("logout");
+        if (logout != null) {
+            req.getSession().removeAttribute("user");
+            resp.sendRedirect("/home");
+            return;
+        }
+
         req.getRequestDispatcher("/login.jsp").forward(req, resp);
     }
 
@@ -41,7 +50,7 @@ public class LoginServlet extends HttpServlet {
 
             if (password.equals(superAdminPassword)) {
                 req.getSession().setAttribute("user", superAdminUsername);
-                resp.sendRedirect("/admin/home");
+                sendJson(resp, gson.toJson(new Ack(true, null)));
             } else
                 sendJson(resp, gson.toJson(new Ack(false, "Incorrect password.")));
 
@@ -54,13 +63,13 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        if (!editor.getPassword().equals(password)) {
+        if (!SecurityUtil.checkPassword(password, editor.getPassword())) {
             sendJson(resp, gson.toJson(new Ack(false, "Incorrect password.")));
             return;
         }
 
-        req.getSession().setAttribute("user", editor);
-        resp.sendRedirect("/admin/home");
+        req.getSession().setAttribute("user", editor.getUsername());
+        sendJson(resp, gson.toJson(new Ack(true, null)));
     }
 
     private final Gson gson = new Gson();

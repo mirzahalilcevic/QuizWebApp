@@ -9,17 +9,44 @@ import java.util.Random;
 
 public class QuizService {
 
-    public List<Quiz> getTwoRandomQuizzes() {
+    public List<Quiz> random(int n, List<Integer> completed) {
 
-        int count = (int) AbstractDao.count(Quiz.class), i = random.nextInt(count), j;
-        do j = random.nextInt(count); while (j == i);
+        List<Integer> ignore = null;
+
+        if (completed == null)
+            ignore = new ArrayList<>();
+        else
+            ignore = new ArrayList<>(completed);
 
         var quizzes = new ArrayList<Quiz>();
-        quizzes.add((Quiz) AbstractDao.get(Quiz.class, 1, i).get(0));
-        quizzes.add((Quiz) AbstractDao.get(Quiz.class, 1, j).get(0));
+        int count = (int) AbstractDao.count(Quiz.class), rand, j = 0;
+
+        if (count == 0) return null;
+
+        for (int i = 0; i < n; i++) {
+
+            Quiz quiz = null;
+
+            do {
+
+                if (j++ == MAX_RETRIES)
+                    break;
+
+                rand = random.nextInt(count);
+                quiz = (Quiz) AbstractDao.get(Quiz.class, 1, rand).get(0);
+
+            } while (ignore.contains(quiz.getId()) || !quiz.isActive());
+
+            if (j <= MAX_RETRIES) {
+                quizzes.add(quiz);
+                ignore.add(quiz.getId());
+            }
+        }
 
         return quizzes;
     }
 
     private final Random random = new Random();
+
+    private final static int MAX_RETRIES = 20;
 }

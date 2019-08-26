@@ -113,6 +113,8 @@ public class QuizStateMachine {
     public String process(Submit event) {
         switch (state) {
             case FINISHED:
+                if (event.email == null || event.email.isEmpty())
+                    return gson.toJson(new qwa.messages.Ack(false, "E-mail can't be empty."));
                 try {
                     AbstractDao.save(score(event));
                     submitted = true;

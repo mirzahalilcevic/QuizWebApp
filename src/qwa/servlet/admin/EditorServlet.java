@@ -5,6 +5,7 @@ import qwa.dao.AbstractDao;
 import qwa.dao.EditorDao;
 import qwa.domain.Editor;
 import qwa.messages.Ack;
+import qwa.util.SecurityUtil;
 
 import javax.persistence.NoResultException;
 import javax.servlet.ServletException;
@@ -13,7 +14,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.SQLIntegrityConstraintViolationException;
 
 @WebServlet(description = "EditorServlet", urlPatterns = {"/admin/editor/*"})
 public class EditorServlet extends HttpServlet {
@@ -57,7 +57,7 @@ public class EditorServlet extends HttpServlet {
             return;
         }
 
-        var editor = new Editor(firstName, lastName, username, password);
+        var editor = new Editor(firstName, lastName, username, SecurityUtil.hashPassword(password));
         AbstractDao.save(editor);
 
         sendJson(resp, gson.toJson(new Ack(true, Integer.toString(editor.getId()))));
@@ -98,7 +98,7 @@ public class EditorServlet extends HttpServlet {
                 editor.setUsername(username);
             }
             if (password != null)
-                editor.setPassword(password);
+                editor.setPassword(SecurityUtil.hashPassword(password));
 
             AbstractDao.update(editor);
             sendJson(resp, gson.toJson(new Ack(true, null)));

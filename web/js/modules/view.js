@@ -20,7 +20,7 @@ export default class View {
 
     hide_home(callback) {
         $(this.id_selector + ' .quiz-home .card-body').animate({
-            'margin-top': '-30%'
+            'margin-top': '-35%'
         }, 500, 'swing', () => $(this.id_selector + ' .quiz-home').animate({
             'opacity': '0.0',
             'margin-top': '-5%'
@@ -229,7 +229,7 @@ export default class View {
             }
 
             $(this.id_selector + ' .time-progress-bar').css('width', '100%');
-            $(this.id_selector + ' .time-progress-bar').text("alright pinhead, your time's up");
+            $(this.id_selector + ' .time-progress-bar').text("time's up");
 
             return;
         }
@@ -296,7 +296,7 @@ export default class View {
             $(this.id_selector + ' .submit-button').text('Submitted');
         else {
             $(this.id_selector + ' .submit-button').text('Send').removeClass('disabled');
-            toastr.error('Submitting results failed.');
+            toastr.error(data.message);
         }
     }
 }

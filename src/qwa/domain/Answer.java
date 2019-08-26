@@ -19,6 +19,11 @@ public class Answer {
     public Answer() {
     }
 
+    public Answer(String text, boolean correctness) {
+        this.text = text;
+        this.correctness = correctness;
+    }
+
     public int getId() {
         return id;
     }

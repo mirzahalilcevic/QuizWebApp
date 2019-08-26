@@ -1,0 +1,22 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="QuizWebApp:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/QuizWebApp_war_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="QuizWebApp/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="QuizWebApp" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="commons-csv-1.6" />
+          <element id="library" level="project" name="eclipselink" />
+          <element id="library" level="project" name="gson-2.8.5" />
+          <element id="library" level="project" name="javax.persistence" />
+          <element id="library" level="project" name="jbcrypt-1.0.0" />
+          <element id="library" level="project" name="mysql-connector-java-8.0.15" />
+          <element id="library" level="project" name="websocket-api" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

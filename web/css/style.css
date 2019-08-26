@@ -21,6 +21,24 @@ input[type=password]:focus:not([readonly]) {
     box-shadow: 0 1px 0 0 #2d97d1 !important;
 }
 
+input[type=number]:focus:not([readonly]) + label {
+    color: #2d97d1 !important;
+}
+
+input[type=number]:focus:not([readonly]) {
+    border-bottom: 1px solid #2d97d1 !important;
+    box-shadow: 0 1px 0 0 #2d97d1 !important;
+}
+
+textarea:focus:not([readonly]) + label {
+    color: #2d97d1 !important;
+}
+
+textarea:focus:not([readonly]) {
+    border-bottom: 1px solid #2d97d1 !important;
+    box-shadow: 0 1px 0 0 #2d97d1 !important;
+}
+
 .navbar {
     color: #b0b0b1;
     box-shadow: none;
@@ -28,7 +46,7 @@ input[type=password]:focus:not([readonly]) {
 
 .card-body, .list-group-item, .modal-content {
     color: #b0b0b1 !important;
-    background-color: #1a1824 !important;
+    background-color: #181724 !important;
 }
 
 .form-check-label {
@@ -49,7 +67,7 @@ input[type=password]:focus:not([readonly]) {
 }
 
 .quiz-summary {
-    width: 380px;
+    width: 340px;
 }
 
 .time-progress {

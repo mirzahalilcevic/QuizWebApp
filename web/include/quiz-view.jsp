@@ -6,8 +6,12 @@
 
     <!-- Image -->
     <div class="view view-cascade overlay">
-        <img class="card-img-top" src="https://mdbootstrap.com/img/Photos/Others/photo6.jpg"
+        <img class="card-img-top"
+             src="<%=((Quiz) request.getAttribute("quiz")).getImage() != null && !((Quiz) request.getAttribute("quiz")).getImage().isEmpty() ? ((Quiz) request.getAttribute("quiz")).getImage() : "https://icon-library.net/images/no-image-available-icon/no-image-available-icon-6.jpg"%>"
              alt="quiz image">
+        <a class="start-button">
+            <div class="mask rgba-white-slight"></div>
+        </a>
     </div>
 
     <!-- Info -->
@@ -20,13 +24,13 @@
 
         <!-- Description -->
         <p class="card-text quiz-desc">
-            <%=((Quiz) request.getAttribute("quiz")).getDescription()%>
+            <%=((Quiz) request.getAttribute("quiz")).getDescription() != null && !((Quiz) request.getAttribute("quiz")).getDescription().isEmpty() ? ((Quiz) request.getAttribute("quiz")).getDescription() : "<span class=\"text-mute\">No description available</span>"%>
         </p>
 
         <br>
 
         <!-- Start -->
-        <button type="button" class="btn btn-outline-yellow btn-rounded waves-effect start-button">
+        <button type="button" class="btn btn-sm btn-outline-yellow btn-rounded waves-effect start-button">
             Start
         </button>
 

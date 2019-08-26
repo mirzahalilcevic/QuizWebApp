@@ -1,6 +1,7 @@
 package qwa.domain;
 
 import javax.persistence.*;
+import javax.xml.stream.FactoryConfigurationError;
 
 @Entity
 @Table(name = "scores")
@@ -10,11 +11,11 @@ public class Score {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "quiz_id", nullable = false)
     private Quiz quiz;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "player_id", nullable = false)
     private Player player;
 

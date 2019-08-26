@@ -21,7 +21,27 @@
     <!-- RandomServlet -->
     <servlet-mapping>
         <servlet-name>RandomServlet</servlet-name>
-        <url-pattern>/quiz</url-pattern>
+        <url-pattern>/quiz/random</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>BrowseServlet</servlet-name>
+        <jsp-file>/browse.jsp</jsp-file>
+    </servlet>
+    <!-- BrowseServlet -->
+    <servlet-mapping>
+        <servlet-name>BrowseServlet</servlet-name>
+        <url-pattern>/quiz/browse</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>NewQuizServlet</servlet-name>
+        <jsp-file>/admin/quiz.jsp</jsp-file>
+    </servlet>
+    <!-- NewQuizServlet -->
+    <servlet-mapping>
+        <servlet-name>NewQuizServlet</servlet-name>
+        <url-pattern>/admin/quiz/new</url-pattern>
     </servlet-mapping>
 
 </web-app>
